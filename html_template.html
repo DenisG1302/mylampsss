@@ -8,18 +8,30 @@
 <body>
   <h1>Обновление прошивки ESP8266</h1>
   <button id="updateButton" disabled>Проверка версии...</button>
-  <script>
-    function updateFirmware() {
-      fetch('/update')
-        .then(response => response.text())
-        .then(text => {
-          if (text === 'Update successful. Device is rebooting...') {
-            alert('Обновление успешно. Устройство перезагружается...');
-          } else {
-            alert('Ошибка обновления: ' + text);
-          }
-        });
-    }
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+  function updateFirmware() {
+    fetch('/update')
+      .then(response => response.text())
+      .then(text => {
+        if (text === 'Update successful. Device is rebooting...') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Обновление прошивки',
+            text: 'Прошивка успешно обновлена. Устройство перезагружается...',
+            showConfirmButton: false,
+            timer: 3000
+          }).then(() => location.reload());
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Ошибка обновления',
+            text: 'Произошла ошибка при обновлении прошивки: ' + text,
+          });
+        }
+      });
+  }
+</script>
 
     fetch('/version')
       .then(response => response.text())
