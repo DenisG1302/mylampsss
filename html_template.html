@@ -14,7 +14,7 @@
     fetch('/update')
       .then(response => response.text())
       .then(text => {
-        if (text === 'Update successful. Device is rebooting...') {
+        if (text.includes('Update successful')) {
           Swal.fire({
             icon: 'success',
             title: 'Обновление прошивки',
