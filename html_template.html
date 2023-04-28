@@ -31,8 +31,7 @@ fetch('/update')
       });
     }
     fetch('/version')
-      .then(response => response.tex
-t())
+      .then(response => response.text())
       .then(version => {
         if (version) {
           document.getElementById('updateButton').textContent = 'Обновить до версии: ' + version;
