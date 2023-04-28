@@ -11,38 +11,53 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
   function updateFirmware() {
-fetch('/update')
-  .then(response => response.text())
-  .then(text => {
-    console.log(text); // Выводим полученный текст в консоль
-    if (text === 'Update successful. Device is rebooting...') {
-      Swal.fire({
-        icon: 'success',
-        title: 'Обновление прошивки',
-        text: 'Прошивка успешно обновлена. Устройство перезагружается...',
-        showConfirmButton: false,
-        timer: 3000
-      }).then(() => location.reload());
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Ошибка обновления',
-        text: 'Произошла ошибка при обновлении прошивки: ' + text,
-      });
-    }
-}
-    fetch('/version')
+    fetch('/update')
       .then(response => response.text())
-      .then(version => {
-        if (version) {
-          document.getElementById('updateButton').textContent = 'Обновить до версии: ' + version;
-          document.getElementById('updateButton').disabled = false;
-          document.getElementById('updateButton').onclick = updateFirmware;
+      .then(text => {
+        console.log(text);
+        if (text.includes('Update successful. Device is rebooting...')) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Обновление прошивки',
+            text: 'Прошивка успешно обновлена. Устройство перезагружается...',
+            showConfirmButton: false,
+            timer: 3000
+          }).then(() => location.reload());
         } else {
-          document.getElementById('updateButton').textContent = 'Нет новой версии';
-          document.getElementById('updateButton').disabled = true;
+          Swal.fire({
+            icon: 'error',
+            title: 'Ошибка обновления',
+            text: 'Произошла ошибка при обновлении прошивки: ' + text,
+          });
         }
+      })
+      .catch(error => {
+        console.error(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Ошибка обновления',
+          text: 'Произошла ошибка при обновлении прошивки: ' + error.message,
+        });
       });
-  </script>
+  }
+
+  fetch('/version')
+    .then(response => response.text())
+    .then(version => {
+      if (version) {
+        document.getElementById('updateButton').innerText = 'Обновить до версии: ' + version;
+        document.getElementById('updateButton').disabled = false;
+        document.getElementById('updateButton').onclick = updateFirmware;
+      } else {
+        document.getElementById('updateButton').innerText = 'Нет новой версии';
+        document.getElementById('updateButton').disabled = true;
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      document.getElementById('updateButton').innerText = 'Ошибка загрузки версии';
+      document.getElementById('updateButton').disabled = true;
+    });
+</script>
 </body>
 </html>
