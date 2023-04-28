@@ -14,7 +14,7 @@
     fetch('/update')
       .then(response => response.text())
       .then(text => {
-		console.log(text);
+		console.log(text)
          if (text === 'Update successful. Device is rebooting...') 
           Swal.fire({
             icon: 'success',
