@@ -11,26 +11,34 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
   function updateFirmware() {
-    fetch('/update')
-      .then(response => response.text())
-      .then(text => {
-        console.log(text);
-        if (text.includes('Update successful. Device is rebooting...')) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Обновление прошивки',
-            text: 'Прошивка успешно обновлена. Устройство перезагружается...',
-            showConfirmButton: false,
-            timer: 3000
-          }).then(() => location.reload());
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Ошибка обновления',
-            text: 'Произошла ошибка при обновлении прошивки: ' + text,
-          });
-        }
-      })
+fetch('/update')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.text();
+  })
+  .then(text => {
+    if (text === 'Update successful. Device is rebooting...') {
+      Swal.fire({
+        icon: 'success',
+        title: 'Обновление прошивки',
+        text: 'Прошивка успешно обновлена. Устройство перезагружается...',
+        showConfirmButton: false,
+        timer: 3000
+      }).then(() => location.reload());
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Ошибка обновления',
+        text: 'Произошла ошибка при обновлении прошивки: ' + text,
+      });
+    }
+  })
+  .catch(error => {
+    console.error('There was a problem with the fetch operation:', error);
+  });
+
   }
 
   fetch('/version')
