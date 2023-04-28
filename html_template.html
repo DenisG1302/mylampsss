@@ -14,7 +14,8 @@
     fetch('/update')
       .then(response => response.text())
       .then(text => {
-        if (text.includes('Update successful')) {
+		console.log(text);
+         if (text === 'Update successful. Device is rebooting...') 
           Swal.fire({
             icon: 'success',
             title: 'Обновление прошивки',
@@ -32,7 +33,8 @@
       });
   }
     fetch('/version')
-      .then(response => response.text())
+      .then(response => response.tex
+t())
       .then(version => {
         if (version) {
           document.getElementById('updateButton').textContent = 'Обновить до версии: ' + version;
