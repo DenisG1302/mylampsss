@@ -31,14 +31,6 @@
           });
         }
       })
-      .catch(error => {
-        console.error(error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Ошибка обновления',
-          text: 'Произошла ошибка при обновлении прошивки: ' + error.message,
-        });
-      });
   }
 
   fetch('/version')
