@@ -7,7 +7,7 @@
 </head>
 <body>
   <h1>Обновление прошивки ESP8266</h1>
-  <!--UPDATE_BUTTON-->
+  <button id="updateButton" disabled>Проверка версии...</button>
   <script>
     function updateFirmware() {
       fetch('/update')
@@ -20,6 +20,19 @@
           }
         });
     }
+
+    fetch('/version')
+      .then(response => response.text())
+      .then(version => {
+        if (version) {
+          document.getElementById('updateButton').textContent = 'Обновить до версии: ' + version;
+          document.getElementById('updateButton').disabled = false;
+          document.getElementById('updateButton').onclick = updateFirmware;
+        } else {
+          document.getElementById('updateButton').textContent = 'Нет новой версии';
+          document.getElementById('updateButton').disabled = true;
+        }
+      });
   </script>
 </body>
 </html>
