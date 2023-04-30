@@ -10,11 +10,14 @@
   <button id="updateButton" disabled>Проверка версии...</button>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   <script>
-    function checkUpdateStatus() {
-      fetch('/updateStatus')
+    function updateFirmware() {
+      document.getElementById('updateButton').innerText = 'Обновление началось...';
+      document.getElementById('updateButton').disabled = true;
+
+      fetch('/update')
         .then(response => response.text())
-        .then(status => {
-          if (status === 'Update successful. Device is rebooting...') {
+        .then(text => {
+          if (text === 'Update successful. Device is rebooting...') {
             Swal.fire({
               icon: 'success',
               title: 'Обновление прошивки',
@@ -22,27 +25,15 @@
               showConfirmButton: false,
               timer: 3000
             }).then(() => location.reload());
-          } else if (status === 'updating') {
-            setTimeout(checkUpdateStatus, 1000);
           } else {
             Swal.fire({
               icon: 'error',
               title: 'Ошибка обновления',
-              text: 'Произошла ошибка при обновлении прошивки: ' + status,
+              text: 'Произошла ошибка при обновлении прошивки: ' + text,
             });
           }
         })
         .catch(error => {
-          console.error('There was a problem with the fetch operation:', error);
-        });
-    }
-
-    function updateFirmware() {
-      fetch('/update')
-        .then(() => {
-          checkUpdateStatus();
-        })
-                .catch(error => {
           console.error('There was a problem with the fetch operation:', error);
         });
     }
@@ -67,4 +58,3 @@
   </script>
 </body>
 </html>
-
