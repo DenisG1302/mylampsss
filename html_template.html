@@ -18,6 +18,7 @@
                 icon: 'info',
                 title: 'Подождите',
                 text: 'Попытка установить прошивку',
+                showConfirmButton: false,
                 onBeforeOpen: () => {
                     Swal.showLoading();
                 }
@@ -30,6 +31,7 @@
                 })
                 .then(text => {
                     if (text === 'No update available.') {
+                        loadingPopup.close();
                         Swal.fire({
                             icon: 'error',
                             title: 'Ошибка обновления',
@@ -37,6 +39,7 @@
                         });
                     } else if (text.startsWith('Update failed: ')) {
                         const errorMessage = text.substring(15);
+                        loadingPopup.close();
                         Swal.fire({
                             icon: 'error',
                             title: 'Ошибка обновления',
@@ -46,6 +49,7 @@
                 })
                 .catch(error => {
                     Swal.fire({
+                        loadingPopup.close();
                         icon: 'info',
                         title: 'Обновление началось',
                         text: 'Процесс обновления начался. Пожалуйста, подождите...',
