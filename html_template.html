@@ -59,11 +59,11 @@
                         onBeforeOpen: () => {
                             Swal.showLoading();
                         }
-                    }).then(() => {
+                    });
                     setTimeout(() => {
                         location.reload(); // перезагрузить страницу
-                    }, 30000);;
-                })});
+                    }, 30000); // задержка в 30 секунд
+                });
         }
 
 
