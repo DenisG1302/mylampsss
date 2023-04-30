@@ -34,7 +34,7 @@
                             title: 'Ошибка обновления',
                             text: 'Произошла ошибка при обновлении прошивки: ' + errorMessage,
                         });
-                    } else {
+                     } else if (text.startsWith('Update successful.')) {
                         Swal.fire({
                             icon: 'info',
                             title: 'Обновление началось',
