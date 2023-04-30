@@ -13,8 +13,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         function updateFirmware() {
+            const loader = document.getElementById('loader'); // получаем элемент индикатора загрузки
+            loader.style.display = 'block'; // отображаем индикатор загрузки
             fetch('/update')
                 .then(response => {
+                    loader.style.display = 'none';
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
@@ -37,6 +40,7 @@
                     }
                 })
                 .catch(error => {
+                    loader.style.display = 'none';
                     Swal.fire({
                         icon: 'info',
                         title: 'Обновление началось',
