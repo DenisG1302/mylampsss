@@ -26,11 +26,12 @@
               text: 'Процесс обновления начался. Пожалуйста, подождите...',
               showConfirmButton: false,
             });
-          } else if (text === 'Update failed: ') {
+          } else if (text.startsWith(text === 'Update failed: ')) {
+              const errorMessage = text.substring(15);
             Swal.fire({
               icon: 'error',
               title: 'Ошибка обновления',
-              text: 'Произошла ошибка при обновлении прошивки: ' + text,
+              text: 'Произошла ошибка при обновлении прошивки: ' + errorMessage,
             });
           } else {
             Swal.fire({
