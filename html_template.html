@@ -10,35 +10,41 @@
   <button id="updateButton" disabled>Проверка версии...</button>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 <script>
-  function updateFirmware() {
-fetch('/update')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    return response.text();
-  })
-  .then(text => {
-    if (text === 'Update successful. Device is rebooting...') {
-      Swal.fire({
-        icon: 'success',
-        title: 'Обновление прошивки',
-        text: 'Прошивка успешно обновлена. Устройство перезагружается...',
-        showConfirmButton: false,
-        timer: 3000
-      }).then(() => location.reload());
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Ошибка обновления',
-        text: 'Произошла ошибка при обновлении прошивки: ' + text,
+  function checkUpdateStatus() {
+    fetch('/updateStatus')
+      .then(response => response.text())
+      .then(status => {
+        if (status === 'Update successful. Device is rebooting...') {
+          Swal.fire({
+            icon: 'success',
+            title: 'Обновление прошивки',
+            text: 'Прошивка успешно обновлена. Устройство перезагружается...',
+            showConfirmButton: false,
+            timer: 3000
+          }).then(() => location.reload());
+        } else if (status === 'updating') {
+          setTimeout(checkUpdateStatus, 1000);
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Ошибка обновления',
+            text: 'Произошла ошибка при обновлении прошивки: ' + status,
+          });
+        }
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
       });
-    }
-  })
-  .catch(error => {
-    console.error('There was a problem with the fetch operation:', error);
-  });
+  }
 
+  function updateFirmware() {
+    fetch('/update')
+      .then(() => {
+        checkUpdateStatus();
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
   }
 
   fetch('/version')
