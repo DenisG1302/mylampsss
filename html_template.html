@@ -19,14 +19,20 @@
           return response.text();
         })
         .then(text => {
-          if (text === 'Update started') {
+          if (text === 'No update available.') {
             Swal.fire({
               icon: 'info',
               title: 'Обновление началось',
               text: 'Процесс обновления начался. Пожалуйста, подождите...',
               showConfirmButton: false,
             });
-          } else (text === 'Update erro') {
+          } else if (text === 'Update failed: ') {
+            Swal.fire({
+              icon: 'error',
+              title: 'Ошибка обновления',
+              text: 'Произошла ошибка при обновлении прошивки: ' + text,
+            });
+          } else {
             Swal.fire({
               icon: 'error',
               title: 'Ошибка обновления',
