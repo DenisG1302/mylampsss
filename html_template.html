@@ -10,12 +10,15 @@
   <button id="updateButton" disabled>Проверка версии...</button>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   <script>
-    function updateFirmware() {
-      document.getElementById('updateButton').innerText = 'Обновление началось...';
-      document.getElementById('updateButton').disabled = true;
-
-      fetch('/update')
-        .then(response => response.text())
+    function checkUpdateStatus() {
+      fetch('/updateStatus')
+        .then(response => {
+          if (response.status === 204) {
+            setTimeout(checkUpdateStatus, 1000);
+          } else {
+            return response.text();
+          }
+        })
         .then(text => {
           if (text === 'Update successful. Device is rebooting...') {
             Swal.fire({
@@ -25,6 +28,36 @@
               showConfirmButton: false,
               timer: 3000
             }).then(() => location.reload());
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Ошибка обновления',
+              text: 'Произошла ошибка при обновлении прошивки: ' + text,
+            });
+          }
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
+    }
+
+    function updateFirmware() {
+      fetch('/update')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(text => {
+          if (text === 'Update started. Device is rebooting...') {
+            Swal.fire({
+              icon: 'info',
+              title: 'Обновление началось',
+              text: 'Процесс обновления начался. Пожалуйста, подождите...',
+              showConfirmButton: false,
+            });
+            checkUpdateStatus();
           } else {
             Swal.fire({
               icon: 'error',
