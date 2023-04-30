@@ -1,64 +1,93 @@
-<script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Обновление прошивки ESP8266</title>
+</head>
+<body>
+  <h1>Обновление прошивки ESP8266</h1>
+  <button id="updateButton" disabled>Проверка версии...</button>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script>
     function checkUpdateStatus() {
-        fetch('/updateStatus')
-            .then(response => {
-                if (response.status === 204) {
-                    setTimeout(checkUpdateStatus, 1000);
-                } else {
-                    return response.text();
-                }
-            })
-            .then(text => {
-                if (text) {
-                    if (text === 'Update successful. Device is rebooting...') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Обновление прошивки',
-                            text: 'Прошивка успешно обновлена. Устройство перезагружается...',
-                            showConfirmButton: false,
-                            timer: 3000
-                        }).then(() => location.reload());
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Ошибка обновления',
-                            text: 'Произошла ошибка при обновлении прошивки: ' + text,
-                        });
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
+      fetch('/updateStatus')
+        .then(response => {
+          if (response.status === 204) {
+            setTimeout(checkUpdateStatus, 1000);
+          } else {
+            return response.text();
+          }
+        })
+        .then(text => {
+          if (text === 'Update successful. Device is rebooting...') {
+            Swal.fire({
+              icon: 'success',
+              title: 'Обновление прошивки',
+              text: 'Прошивка успешно обновлена. Устройство перезагружается...',
+              showConfirmButton: false,
+              timer: 3000
+            }).then(() => location.reload());
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Ошибка обновления',
+              text: 'Произошла ошибка при обновлении прошивки: ' + text,
             });
+          }
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
     }
 
     function updateFirmware() {
-        fetch('/update')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(text => {
-                if (text === 'Update started. Device is rebooting...') {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Обновление началось',
-                        text: 'Процесс обновления начался. Пожалуйста, подождите...',
-                        showConfirmButton: false,
-                    });
-                    checkUpdateStatus();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Ошибка обновления',
-                        text: 'Произошла ошибка при обновлении прошивки: ' + text,
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('There was a problem with the fetch operation:', error);
+      fetch('/update')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text();
+        })
+        .then(text => {
+          if (text === 'Update started. Device is rebooting...') {
+            Swal.fire({
+              icon: 'info',
+              title: 'Обновление началось',
+              text: 'Процесс обновления начался. Пожалуйста, подождите...',
+              showConfirmButton: false,
             });
+            checkUpdateStatus();
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Ошибка обновления',
+              text: 'Произошла ошибка при обновлении прошивки: ' + text,
+            });
+          }
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
     }
-</script>
+
+    fetch('/version')
+      .then(response => response.text())
+      .then(version => {
+        if (version) {
+          document.getElementById('updateButton').innerText = 'Обновить до версии: ' + version;
+          document.getElementById('updateButton').disabled = false;
+          document.getElementById('updateButton').onclick = updateFirmware;
+        } else {
+          document.getElementById('updateButton').innerText = 'Нет новой версии';
+          document.getElementById('updateButton').disabled = true;
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        document.getElementById('updateButton').innerText = 'Ошибка загрузки версии';
+        document.getElementById('updateButton').disabled = true;
+      });
+  </script>
+</body>
+</html>
