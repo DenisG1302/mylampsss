@@ -26,7 +26,7 @@
               text: 'Процесс обновления начался. Пожалуйста, подождите...',
               showConfirmButton: false,
             });
-          } else if (text === 'Update failed: ') {
+          } else if (text.startsWith('Update failed: ')) {
               const errorMessage = text.substring(15);
             Swal.fire({
               icon: 'error',
