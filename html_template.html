@@ -13,22 +13,17 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         function updateFirmware() {
+            let loadingPopup = Swal.fire({
+                icon: 'info',
+                title: 'Подождите',
+                text: 'Попытка установить прошивку',
+                showConfirmButton: false,
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            });
             fetch('/update')
-            Swal.fire({
-                    icon: 'info',
-                    title: 'Подождите',
-                    text: 'Попытка установить прошивку',
-                    showConfirmButton: false,
-                    onBeforeOpen: () => {
-                        Swal.showLoading();
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text();
-                })
+                .then(response => response.text())
                 .then(text => {
                     if (text === 'No update available.') {
                         loadingPopup.close();
@@ -45,6 +40,13 @@
                             title: 'Ошибка обновления',
                             text: 'Произошла ошибка при обновлении прошивки: ' + errorMessage,
                         });
+                    } else {
+                        loadingPopup.close();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Обновление прошивки успешно',
+                            text: 'Прошивка была успешно установлена.'
+                        });
                     }
                 })
                 .catch(error => {
@@ -60,6 +62,7 @@
                     });
                 });
         }
+
 
         fetch('/version')
             .then(response => response.text())
