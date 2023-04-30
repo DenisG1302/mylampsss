@@ -15,15 +15,15 @@
         function updateFirmware() {
             fetch('/update')
             Swal.fire({
-                icon: 'info',
-                title: 'Подождите',
-                text: 'Попытка установить прошивку',
-                showConfirmButton: false,
-                onBeforeOpen: () => {
-                    Swal.showLoading();
-                }
-            })
-            .then(response => {
+                    icon: 'info',
+                    title: 'Подождите',
+                    text: 'Попытка установить прошивку',
+                    showConfirmButton: false,
+                    onBeforeOpen: () => {
+                        Swal.showLoading();
+                    }
+                })
+                .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
@@ -48,8 +48,8 @@
                     }
                 })
                 .catch(error => {
+                    loadingPopup.close();
                     Swal.fire({
-                        loadingPopup.close();
                         icon: 'info',
                         title: 'Обновление началось',
                         text: 'Процесс обновления начался. Пожалуйста, подождите...',
