@@ -59,7 +59,10 @@
                         onBeforeOpen: () => {
                             Swal.showLoading();
                         }
-                    });
+                    }).then(() => {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 30000);
                 });
         }
 
