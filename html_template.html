@@ -1,55 +1,60 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Обновление прошивки ESP8266</title>
-  </head>
-  <body>
-    <h1>Обновление прошивки ESP8266</h1>
-    <button id="updateButton">Проверить наличие обновлений</button>
-    <br><br>
-    <div id="updateStatus"></div>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
-    <script>
-      document.getElementById('updateButton').addEventListener('click', function() {
-        fetch('/version')
-          .then(response => response.text())
-          .then(version => {
-            if (version) {
-              document.getElementById('updateStatus').innerHTML = 'Доступна новая версия: ' + version + '. Подождите, идет обновление...';
-              fetch('/update')
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                  }
-                  return response.text();
-                })
-                .then(text => {
-                  if (text === 'Update successful. Device is rebooting...') {
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Обновление прошивки',
-                      text: 'Прошивка успешно обновлена. Устройство перезагружается...',
-                      showConfirmButton: false,
-                      timer: 3000
-                    }).then(() => location.reload());
-                  } else {
-                    document.getElementById('updateStatus').innerHTML = 'Произошла ошибка при обновлении прошивки: ' + text;
-                  }
-                })
-                .catch(error => {
-                  console.error('There was a problem with the fetch operation:', error);
-                });
-            } else {
-              document.getElementById('updateStatus').innerHTML = 'У вас уже установлена последняя версия.';
-            }
-          })
-          .catch(error => {
-            console.error(error);
-            document.getElementById('updateStatus').innerHTML = 'Ошибка загрузки версии';
-          });
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Обновление прошивки ESP8266</title>
+</head>
+<body>
+  <h1>Обновление прошивки ESP8266</h1>
+  <button id="updateButton" disabled>Проверка версии...</button>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script>
+    function updateFirmware() {
+      document.getElementById('updateButton').innerText = 'Обновление началось...';
+      document.getElementById('updateButton').disabled = true;
+
+      fetch('/update')
+        .then(response => response.text())
+        .then(text => {
+          if (text === 'Update successful. Device is rebooting...') {
+            Swal.fire({
+              icon: 'success',
+              title: 'Обновление прошивки',
+              text: 'Прошивка успешно обновлена. Устройство перезагружается...',
+              showConfirmButton: false,
+              timer: 3000
+            }).then(() => location.reload());
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Ошибка обновления',
+              text: 'Произошла ошибка при обновлении прошивки: ' + text,
+            });
+          }
+        })
+        .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
+    }
+
+    fetch('/version')
+      .then(response => response.text())
+      .then(version => {
+        if (version) {
+          document.getElementById('updateButton').innerText = 'Обновить до версии: ' + version;
+          document.getElementById('updateButton').disabled = false;
+          document.getElementById('updateButton').onclick = updateFirmware;
+        } else {
+          document.getElementById('updateButton').innerText = 'Нет новой версии';
+          document.getElementById('updateButton').disabled = true;
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        document.getElementById('updateButton').innerText = 'Ошибка загрузки версии';
+        document.getElementById('updateButton').disabled = true;
       });
-    </script>
-  </body>
+  </script>
+</body>
 </html>
