@@ -15,47 +15,47 @@
         function updateFirmware() {
             fetch('/update')
             Swal.fire({
-                    icon: 'info',
-                    title: 'Подождите',
-                    text: 'Попытка установить прошивку',
-                    onBeforeOpen: () => {
-                        Swal.showLoading();
+                icon: 'info',
+                title: 'Подождите',
+                text: 'Попытка установить прошивку',
+                onBeforeOpen: () => {
+                    Swal.showLoading();
+                }
+            })
+            .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
                     }
-            });
-        .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(text => {
-                if (text === 'No update available.') {
+                    return response.text();
+                })
+                .then(text => {
+                    if (text === 'No update available.') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Ошибка обновления',
+                            text: 'Произошла ошибка при обновлении прошивки: ',
+                        });
+                    } else if (text.startsWith('Update failed: ')) {
+                        const errorMessage = text.substring(15);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Ошибка обновления',
+                            text: 'Произошла ошибка при обновлении прошивки: ' + errorMessage,
+                        });
+                    }
+                })
+                .catch(error => {
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Ошибка обновления',
-                        text: 'Произошла ошибка при обновлении прошивки: ',
+                        icon: 'info',
+                        title: 'Обновление началось',
+                        text: 'Процесс обновления начался. Пожалуйста, подождите...',
+                        showConfirmButton: false,
+                        onBeforeOpen: () => {
+                            Swal.showLoading();
+                        }
                     });
-                } else if (text.startsWith('Update failed: ')) {
-                    const errorMessage = text.substring(15);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Ошибка обновления',
-                        text: 'Произошла ошибка при обновлении прошивки: ' + errorMessage,
-                    });
-                }
-            })
-            .catch(error => {
-                    Swal.fire({
-                            icon: 'info',
-                            title: 'Обновление началось',
-                            text: 'Процесс обновления начался. Пожалуйста, подождите...',
-                            showConfirmButton: false,
-                            onBeforeOpen: () => {
-                                Swal.showLoading();
-                            }
-                    });
-                    });
-            }
+                });
+        }
 
         fetch('/version')
             .then(response => response.text())
