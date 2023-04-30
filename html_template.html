@@ -34,17 +34,15 @@
                             title: 'Ошибка обновления',
                             text: 'Произошла ошибка при обновлении прошивки: ' + errorMessage,
                         });
-                     } else {
-                        Swal.fire({
-                            icon: 'info',
-                            title: 'Обновление началось',
-                            text: 'Процесс обновления начался. Пожалуйста, подождите...',
-                            showConfirmButton: false,
-                        });
                     }
                 })
                 .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Обновление началось',
+                        text: 'Процесс обновления начался. Пожалуйста, подождите...',
+                        showConfirmButton: false,
+                    });
                 });
         }
 
